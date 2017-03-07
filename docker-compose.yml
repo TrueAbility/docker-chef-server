@@ -1,0 +1,13 @@
+version: "2"
+services:
+    app:
+        build: .
+        ports:
+            - "80:80"
+            - "443:443"
+        environment:
+            PUBLIC_URL: "https://localhost"
+            ENABLE_CHEF_MANAGE: "1"
+        volumes:
+            - "./tmp/data:/var/opt"
+        privileged: true

@@ -1,0 +1,11 @@
+--- /opt/opscode/embedded/lib/ruby/gems/2.2.0/gems/omnibus-ctl-0.5.0/lib/omnibus-ctl.rb.bak 2017-02-21 09:31:46.000000000 +0000
++++ /opt/opscode/embedded/lib/ruby/gems/2.2.0/gems/omnibus-ctl-0.5.0/lib/omnibus-ctl.rb 2017-03-07 20:30:22.989185894 +0000
+@@ -571,7 +571,7 @@
+
+     def tail(*args)
+       # find /var/log -type f -not -path '*/sasl/*' | grep -E -v '(lock|@|tgz|gzip)' | xargs tail --follow=name --retry
+-      command = "find #{log_path}"
++      command = "find -L #{log_path}"
+       command << "/#{args[1]}" if args[1]
+       command << ' -type f'
+       command << log_path_exclude.map { |path| " -not -path #{path}" }.join(' ')
