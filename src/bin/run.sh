@@ -27,6 +27,8 @@ mkdir -p /var/opt/opscode/log
 header "starting runit"
 /opt/opscode/embedded/bin/runsvdir-start &
 
+### FIX ME > If hostname != /var/opt/container_id then reconfigure
+
 header "reconfiguring chef server"
 chef-server-ctl reconfigure
 
@@ -35,13 +37,15 @@ if [ "$ENABLE_CHEF_MANAGE" == "1" ]; then
     chef-manage-ctl reconfigure
 fi
 
+hostname > /var/opt/container_id
 
 ### handle incoming signals
 
-trap "{ handle_signal hup; }" SIGHUP
-trap "{ handle_signal stop; exit; }" SIGINT SIGKILL SIGTERM
-trap "{ handle_signal usr1; }" SIGUSR1
-trap "{ handle_signal usr2; }" SIGUSR2
+trap "{ handle_signal hup; }" HUP
+trap "{ handle_signal stop; exit; }" SIGINT
+trap "{ handle_signal stop; exit; }" SIGTERM
+trap "{ handle_signal usr1; }" USR1
+trap "{ handle_signal usr2; }" USR2
 
 
 ### long running process (logs all processes to STDOUT)
