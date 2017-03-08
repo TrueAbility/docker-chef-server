@@ -34,11 +34,12 @@ cd $TMP
 header "installing apt system packages"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
-apt-get install -y \
+apt-get install -y --no-install-recommends \
     logrotate \
     vim-nox \
     hardlink \
     wget \
+    curl \
     ca-certificates \
     upstart-sysv \
     patch
@@ -66,31 +67,32 @@ ln -sfv /var/opt/opscode/log /var/log/opscode
 ln -sfv /opt/opscode/sv/logrotate /opt/opscode/service/logrotate
 ln -sfv /opt/opscode/embedded/bin/sv /opt/opscode/init/logrotate
 
-
-### plugins (only fully setup/enabled if ENABLE_PLUGIN_NAME=1)
-
-header "installing chef manage plugin"
-chef-server-ctl install chef-manage
+# fixes `chef-server-ctl tail` - https://github.com/chef/omnibus-ctl/pull/49
+cat /src/omnibus-find-fix.diff \
+    | patch /opt/opscode/embedded/lib/ruby/gems/2.2.0/gems/omnibus-ctl-0.5.0/lib/omnibus-ctl.rb
 
 
 ### fixes
-
-header "applying misc fixes"
-
-# fix `chef-manage-ctl reconfigure`
-rm -rf /opt/chef-manage/service
-ln -sf /opt/opscode/service /opt/chef-manage/service
-
+#
+# header "applying misc fixes"
+#
+#
 # fix `chef-server-ctl tail` - https://github.com/chef/omnibus-ctl/pull/49
-cat /src/omnibus-find-fix.diff \
-    | patch /opt/chef-manage/embedded/lib/ruby/gems/2.2.0/gems/omnibus-ctl-0.5.0/lib/omnibus-ctl.rb
-cat /src/omnibus-find-fix.diff \
-    | patch /opt/opscode/embedded/lib/ruby/gems/2.2.0/gems/omnibus-ctl-0.5.0/lib/omnibus-ctl.rb
+# cat /src/omnibus-find-fix.diff \
+#     | patch /opt/chef-manage/embedded/lib/ruby/gems/2.2.0/gems/omnibus-ctl-0.5.0/lib/omnibus-ctl.rb
+# cat /src/omnibus-find-fix.diff \
+#    | patch /opt/opscode/embedded/lib/ruby/gems/2.2.0/gems/omnibus-ctl-0.5.0/lib/omnibus-ctl.rb
+#
 
 ### cleanup
 
 header "cleaning up unecessary files"
-rm -rf $TMP /tmp/* /var/tmp/* /src/omnibus-find-fixx.diff
+rm -rf \
+    $TMP \
+    /tmp/* \
+    /var/tmp/* \
+    /var/opt/* \
+    /src/omnibus-find-fixx.diff
 apt-get autoremove -y
 apt-get clean -y
 
