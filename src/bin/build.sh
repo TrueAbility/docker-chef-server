@@ -23,10 +23,10 @@ function header {
 pushd /src
     header "installing src files"
     mkdir -p /opt/opscode/sv/ /etc/opscode /etc/chef
-    mv bin/backup.sh /usr/bin/chef-server-backup
     mv logrotate /opt/opscode/sv/logrotate
     mv chef-server.rb /etc/opscode/chef-server.rb
     mv knife.rb /etc/chef/knife.rb
+    mv bin/wait-lock.sh /usr/bin/chef-server-wait-lock
 popd
 
 cd $TMP

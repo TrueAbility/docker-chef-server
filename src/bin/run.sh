@@ -33,36 +33,6 @@ function reconfigure_plugins {
     fi
 }
 
-# function stop {
-#     # stop any plugins first
-#     if [ "$ENABLE_CHEF_MANAGE" == "1" ]; then
-#         header "stopping chef manage"
-#         chef-manage-ctl stop
-#     fi
-#     header "stopping chef server"
-#     chef-server-ctl stop
-# }
-
-# function start {
-#     header "starting chef server"
-#     chef-server-ctl start
-
-#     # start any plugins last
-#     if [ "$ENABLE_CHEF_MANAGE" == "1" ]; then
-#         header "starting chef manage"
-#         chef-manage-ctl start
-#     fi
-# }
-
-# function restart {
-#     stop
-#     start
-# }
-
-# function shutdown {
-#     stop
-#     exit 0
-# }
 
 ### fixes for anything required inside the volume mounted data dir
 
@@ -100,6 +70,20 @@ trap "{ chef-server-ctl stop; exit; }" SIGINT SIGTERM
 
 ### long running process (logs all processes to STDOUT)
 
-header "startup complete - now watching logs longterm"
+header "startup complete"
 
-chef-server-ctl tail
+# FIX ME: can't seem to figure out how to run `tail` but also catch docker 
+# stop to properly shutdown
+# 
+# chef-server-ctl tail ; chef-server-ctl stop
+#
+
+echo
+echo "View Logs: docker exec -it [CONTAINER_ID] chef-server-ctl tail"
+echo
+
+while /bin/true; do
+    sleep 10
+done
+
+chef-server-ctl stop
