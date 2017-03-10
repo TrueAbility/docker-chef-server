@@ -3,7 +3,7 @@
 ## Disclaimer
 
 This project is intended for development/testing purposes where the latest
-Chef Server is required.  The version will following upstream stable where 
+Chef Server is required.  The version will follow upstream stable where 
 possible, and there will be little attempt to maintain any sort of backward 
 compatibility.
 
