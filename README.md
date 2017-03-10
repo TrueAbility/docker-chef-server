@@ -1,5 +1,18 @@
 # Docker Chef Server
 
+This project provides a single server implementation of Chef Server as a 
+Docker image, and is accessible via 
+[Docker Hub](https://hub.docker.com/r/trueability/chef-server/):
+
+```
+$ docker pull trueability/chef-server
+```
+
+Available tags are `latest` and every version of Chef Server that has been 
+built for.  I.e. `12.13.0`, etc.  See 
+[Docker Hub](https://hub.docker.com/r/trueability/chef-server/) for all 
+current tags.
+
 ## Disclaimer
 
 This project is intended for development/testing purposes where the latest
