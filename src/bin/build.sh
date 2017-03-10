@@ -4,10 +4,10 @@ set -e
 CHEF_BASE_URL="https://packages.chef.io/files/stable/"
 SERVER_VERSION="12.13.0"
 SERVER_SHA256="e1c6a092f74a6b6b49b47dd92afa95be3dd9c30e6b558da5adf943a359a65997"
-SERVER_BASE_URL="$CHEF_BASE_URL/chef-server/${SERVER_VERSION}/ubuntu/16.04/"
+SERVER_BASE_URL="${CHEF_BASE_URL}/chef-server/${SERVER_VERSION}/ubuntu/16.04/"
 CLIENT_VERSION="12.19.36"
 CLIENT_SHA256="fbf44670ab5b76e4f1a1f5357885dafcc79e543ccbbe3264afd40c15d604b6dc"
-CLIENT_BASE_URL="$CHEF_BASE_URL/chef/${CLIENT_VERSION}/ubuntu/16.04/"
+CLIENT_BASE_URL="${CHEF_BASE_URL}/chef/${CLIENT_VERSION}/ubuntu/16.04/"
 TMP=$(mktemp -d)
 
 function header {
@@ -45,8 +45,8 @@ apt-get install -y --no-install-recommends \
     patch
 
 header "downloading and verifying chef packages"
-wget -nv $SERVER_BASE_URL/chef-server-core_${SERVER_VERSION}-1_amd64.deb
-wget -nv $CLIENT_BASE_URL/chef_${CLIENT_VERSION}-1_amd64.deb
+wget -nv ${SERVER_BASE_URL}/chef-server-core_${SERVER_VERSION}-1_amd64.deb
+wget -nv ${CLIENT_BASE_URL}/chef_${CLIENT_VERSION}-1_amd64.deb
 
 sha256sum -c - <<EOF
 ${SERVER_SHA256}  chef-server-core_${SERVER_VERSION}-1_amd64.deb
@@ -70,19 +70,6 @@ ln -sfv /opt/opscode/embedded/bin/sv /opt/opscode/init/logrotate
 # fixes `chef-server-ctl tail` - https://github.com/chef/omnibus-ctl/pull/49
 cat /src/omnibus-find-fix.diff \
     | patch /opt/opscode/embedded/lib/ruby/gems/2.2.0/gems/omnibus-ctl-0.5.0/lib/omnibus-ctl.rb
-
-
-### fixes
-#
-# header "applying misc fixes"
-#
-#
-# fix `chef-server-ctl tail` - https://github.com/chef/omnibus-ctl/pull/49
-# cat /src/omnibus-find-fix.diff \
-#     | patch /opt/chef-manage/embedded/lib/ruby/gems/2.2.0/gems/omnibus-ctl-0.5.0/lib/omnibus-ctl.rb
-# cat /src/omnibus-find-fix.diff \
-#    | patch /opt/opscode/embedded/lib/ruby/gems/2.2.0/gems/omnibus-ctl-0.5.0/lib/omnibus-ctl.rb
-#
 
 ### cleanup
 
