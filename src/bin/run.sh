@@ -68,14 +68,12 @@ hostname > $CID
 trap "{ chef-server-ctl hup; }" SIGHUP
 trap "{ chef-server-ctl stop; exit; }" SIGINT SIGTERM
 
-### long running process (logs all processes to STDOUT)
-
 header "startup complete"
 
 # FIX ME: can't seem to figure out how to run `tail` but also catch docker 
 # stop to properly shutdown
 # 
-# chef-server-ctl tail ; chef-server-ctl stop
+# chef-server-ctl tail
 #
 
 echo
