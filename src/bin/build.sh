@@ -41,7 +41,8 @@ apt-get install -y \
     wget \
     ca-certificates \
     upstart-sysv \
-    patch
+    patch \
+    erlang-base
 
 header "downloading and verifying chef packages"
 wget -nv $SERVER_BASE_URL/chef-server-core_${SERVER_VERSION}-1_amd64.deb
@@ -62,6 +63,7 @@ cd /
 ### additional setup
 
 header "misc additional setup"
+[ -d /var/opt/opscode/log ] || mkdir -p /var/opt/opscode/log
 ln -sfv /var/opt/opscode/log /var/log/opscode
 ln -sfv /opt/opscode/sv/logrotate /opt/opscode/service/logrotate
 ln -sfv /opt/opscode/embedded/bin/sv /opt/opscode/init/logrotate
