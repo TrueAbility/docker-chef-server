@@ -4,6 +4,7 @@ set -e
 export NO_SSL='1' # tells chef-manage ui to not force ssl redirect
 CID="/var/opt/.container_id"
 LOCK="/var/opt/opscode/.reconfigure.lock"
+INITIAL_BOOT="/var/opt/opscode/.initial_boot"
 
 function header {
     STR=$(echo "$1" | awk '{print toupper($0)}')
@@ -36,8 +37,12 @@ function reconfigure_plugins {
 
 ### fixes for anything required inside the volume mounted data dir
 
-mkdir -p /var/opt/opscode/log
-
+if [ ! -f "$INITIAL_BOOT" ]; then
+    # it's our first time ever running, so lets do a cleanse
+    chef-server-ctl cleanse
+    mkdir -p /var/opt/opscode/log
+    touch $INITIAL_BOOT
+fi
 
 ### start it up
 

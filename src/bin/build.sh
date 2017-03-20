@@ -42,6 +42,7 @@ apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     upstart-sysv \
+    erlang-base \
     patch
 
 header "downloading and verifying chef packages"
