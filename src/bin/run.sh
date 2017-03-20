@@ -40,20 +40,27 @@ function reconfigure_plugins {
 if [ ! -f "$INITIAL_BOOT" ]; then
     # it's our first time ever running, so lets do a cleanse
     chef-server-ctl cleanse
+
     mkdir -p /var/opt/opscode/log
-    touch $INITIAL_BOOT
+    date > $INITIAL_BOOT
 fi
+
 
 ### start it up
 
 header "starting runit"
 /opt/opscode/embedded/bin/runsvdir-start &
 
+
 rm -f $LOCK
 
 if [ ! -f "$CID" ] || [ "$(hostname)" != "$(cat $CID)" ]; then
     date > $LOCK
 
+    # this is costly to do here (since we have to do it again later)... 
+    # but causes issues to install plugins before server is reconfigured first
+    chef-server-ctl reconfigure
+    
     # install optional plugins first before chef-server-ctl reconfigure
     install_plugins
 
