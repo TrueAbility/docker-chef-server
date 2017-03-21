@@ -6,7 +6,7 @@ CID="/var/opt/.run/container_id"
 LOCK="/var/opt/.run/startup.lock"
 INITIAL_BOOT="/var/opt/.run/initial_boot"
 
-mkdir -p /var/opt/opscode/
+mkdir -p /var/opt/opscode/ /var/opt/.run
 date > $LOCK
 
 function header {

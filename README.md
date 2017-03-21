@@ -108,7 +108,9 @@ $ docker exec -it [CONTAINER_ID] chef-server-wait-lock
 ```
 
 Note that on the first boot, the startup wait lock also does a second wait to
-ensure that the `pivotal` user has been created properly before resuming.
+ensure that the `pivotal` user has been created properly before resuming.  
+Ultimately, the first boot will take several minutes to complete because of
+all the reconfigurations that need to happen.
 
 
 ## Working With Chef Server
