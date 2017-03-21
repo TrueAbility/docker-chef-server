@@ -2,9 +2,9 @@
 set -e
 
 export NO_SSL='1' # tells chef-manage ui to not force ssl redirect
-CID="/var/opt/.container_id"
-LOCK="/var/opt/opscode/.startup.lock"
-INITIAL_BOOT="/var/opt/opscode/.initial_boot"
+CID="/var/opt/.run/container_id"
+LOCK="/var/opt/.run/startup.lock"
+INITIAL_BOOT="/var/opt/.run/initial_boot"
 
 mkdir -p /var/opt/opscode/
 date > $LOCK
@@ -55,6 +55,9 @@ if [ ! -f "$INITIAL_BOOT" ]; then
     header "reconfiguring chef server [first boot]"
     chef-server-ctl reconfigure
 
+    # wait for the pivotal user to be fully created before resuming
+    chef-server-wait-pivotal
+
     # create our initial boot file so we don't cleanse again
     date > $INITIAL_BOOT
 else
@@ -76,11 +79,6 @@ if [ ! -f "$CID" ] || [ "$(hostname)" != "$(cat $CID)" ]; then
     # reconfigure optional plugins after chef-server-ctl reconfigure
     reconfigure_plugins
 fi
-
-
-### wait for the pivotal user to be fully created before resuming
-
-chef-server-wait-pivotal
 
 
 ### remove lock and resume

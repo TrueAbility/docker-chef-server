@@ -1,6 +1,6 @@
 version: "2"
 services:
-    app:
+    chef-server:
         build: .
         ports:
             - "80:80"

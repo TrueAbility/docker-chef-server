@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LOCK="/var/opt/opscode/.startup.lock"
+LOCK="/var/opt/.run/startup.lock"
 
 echo -n "Waiting for Chef Server Startup Lock"
 while true; do

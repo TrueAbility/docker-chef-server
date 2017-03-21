@@ -31,6 +31,17 @@ Please do not rely on this image for production!
 $ docker-compose up
 ```
 
+The container will be named `dockerchefserver_chef-server_1` which is 
+annoying, but via `docker-compose` you can call it as `chef-server`:
+
+```
+# manage container with chef-server-ctl
+$ docker-compose exec chef-server chef-server-ctl ...
+
+# or drop into bash
+$ docker-compose exec chef-server /bin/bash
+```
+
 **Docker Directly**
 
 ```
@@ -43,6 +54,8 @@ $ docker run -it \
     -e PUBLIC_URL="https://mydomain.example.com" \
     -e ENABLE_CHEF_MANAGE=1 \
     trueability/chef-server
+
+$ docker exec -it chef-server chef-server-ctl ...
 ```
 
 
@@ -82,8 +95,8 @@ is stored for persistence.
 ## Startup Wait Lock
 
 On startup `reconfigure` is always run, unless the container id hasn't change 
-(determined by `/var/opt/.container_id`).  During startup, a lock 
-file is created at `/var/opt/opscode/.startup.lock`, and removed once 
+(determined by `/var/opt/.run/container_id`).  During startup, a lock 
+file is created at `/var/opt/.run/startup.lock`, and removed once 
 the startup/reconfigure/etc is complete.
 
 For scripting, it is important to ensure that startup and reconfiguration is 
