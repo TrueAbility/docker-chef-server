@@ -6,7 +6,7 @@ CID="/var/opt/.run/container_id"
 LOCK="/var/opt/.run/startup.lock"
 INITIAL_BOOT="/var/opt/.run/initial_boot"
 
-mkdir -p /var/opt/opscode/ /var/opt/.run
+mkdir -p /var/opt/.run
 date > $LOCK
 
 function header {
@@ -41,9 +41,7 @@ function reconfigure_plugins {
 ### initial start it up
 
 if [ ! -f "$INITIAL_BOOT" ]; then
-    # it's our first time ever running, so lets do a cleanse
-    chef-server-ctl cleanse
-    mkdir -p /var/opt/opscode/log
+    mkdir -p /var/opt/opscode/{etc,log}
 
     # runit before reconfigure
     header "starting runit"
@@ -70,6 +68,10 @@ fi
 ### reconfigure if this is a new container and/or first boot
 
 if [ ! -f "$CID" ] || [ "$(hostname)" != "$(cat $CID)" ]; then
+    # copy our settings into place
+    mv /src/chef-server.rb /etc/opscode/chef-server.rb
+    mv /src/knife.rb /etc/chef/knife.rb
+
     # install optional plugins first before chef-server-ctl reconfigure
     install_plugins
 

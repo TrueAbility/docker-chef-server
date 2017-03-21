@@ -130,6 +130,16 @@ $ docker exec -it [CONTAINER_ID] /bin/bash
 XXXXXXXX $ chef-server-ctl ...
 ```
 
+## Chef Server Customizations
+
+A sane default `chef-server.rb` is setup in the image under 
+`/etc/opscode/chef-server.rb`, but local customizations can be made in the 
+file `[DATA]/opscode/etc/chef-server-local.rb`.
+
+See the [Chef Documentation](https://docs.chef.io/config_rb_server.html) for
+all configurations that can be made in `chef-server.rb`.
+
+
 ## Acknowledgements
 
 This project is largely based off the initial work of Maciej Pasternacki and

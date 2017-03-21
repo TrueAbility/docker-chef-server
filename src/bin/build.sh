@@ -24,7 +24,6 @@ pushd /src
     header "installing src files"
     mkdir -p /opt/opscode/sv/ /etc/opscode /etc/chef
     mv logrotate /opt/opscode/sv/logrotate
-    mv chef-server.rb /etc/opscode/chef-server.rb
     mv knife.rb /etc/chef/knife.rb
     mv bin/wait-lock.sh /usr/bin/chef-server-wait-lock
     mv bin/wait-pivotal.sh /usr/bin/chef-server-wait-pivotal
@@ -60,6 +59,11 @@ dpkg -i \
     chef-server-core_${SERVER_VERSION}-1_amd64.deb \
     chef_${CLIENT_VERSION}-1_amd64.deb
 
+header "cleansing chef server"
+chef-server-ctl cleanse
+mkdir -p /etc/opscode/
+mv /src/chef-server.rb /etc/opscode/chef-server.rb
+
 cd /
 
 ### additional setup
@@ -81,7 +85,7 @@ rm -rf \
     /tmp/* \
     /var/tmp/* \
     /var/opt/* \
-    /src/omnibus-find-fixx.diff
+    /src/omnibus-find-fix.diff
 apt-get autoremove -y
 apt-get clean -y
 
