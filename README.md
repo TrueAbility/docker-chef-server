@@ -4,7 +4,7 @@ This project provides a single server implementation of Chef Server as a
 Docker image, and is accessible via 
 [Docker Hub](https://hub.docker.com/r/trueability/chef-server/):
 
-```
+```bash
 $ docker pull trueability/chef-server
 ```
 
@@ -27,14 +27,14 @@ Please do not rely on this image for production!
 
 **Docker Compose**
 
-```
+```bash
 $ docker-compose up
 ```
 
 The container will be named `dockerchefserver_chef-server_1` which is 
 annoying, but via `docker-compose` you can call it as `chef-server`:
 
-```
+```bash
 # manage container with chef-server-ctl
 $ docker-compose exec chef-server chef-server-ctl ...
 
@@ -44,7 +44,7 @@ $ docker-compose exec chef-server /bin/bash
 
 **Docker Directly**
 
-```
+```bash
 $ docker run -it \
     --name chef-server \
     -v /path/to/data:/var/opt \
@@ -103,7 +103,7 @@ For scripting, it is important to ensure that startup and reconfiguration is
 complete before attempting to access the server.  This can be handled easily 
 with the included wait script:
 
-```
+```bash
 $ docker exec -it [CONTAINER_ID] chef-server-wait-lock
 ```
 
@@ -118,13 +118,13 @@ all the reconfigurations that need to happen.
 The server can be accessed via `docker exec` in order to administer Chef 
 Server, the same as you would anywhere else.
 
-```
+```bash
 $ docker exec -it [CONTAINER_ID] chef-server-ctl ...
 ```
 
 Alternatively, you can drop into a BASH shell:
 
-```
+```bash
 $ docker exec -it [CONTAINER_ID] /bin/bash
 
 XXXXXXXX $ chef-server-ctl ...
