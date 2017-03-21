@@ -27,6 +27,7 @@ pushd /src
     mv chef-server.rb /etc/opscode/chef-server.rb
     mv knife.rb /etc/chef/knife.rb
     mv bin/wait-lock.sh /usr/bin/chef-server-wait-lock
+    mv bin/wait-pivotal.sh /usr/bin/chef-server-wait-pivotal
 popd
 
 cd $TMP

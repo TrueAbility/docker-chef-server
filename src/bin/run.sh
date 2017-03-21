@@ -3,8 +3,11 @@ set -e
 
 export NO_SSL='1' # tells chef-manage ui to not force ssl redirect
 CID="/var/opt/.container_id"
-LOCK="/var/opt/opscode/.reconfigure.lock"
+LOCK="/var/opt/opscode/.startup.lock"
 INITIAL_BOOT="/var/opt/opscode/.initial_boot"
+
+mkdir -p /var/opt/opscode/
+date > $LOCK
 
 function header {
     STR=$(echo "$1" | awk '{print toupper($0)}')
@@ -35,52 +38,64 @@ function reconfigure_plugins {
 }
 
 
-### fixes for anything required inside the volume mounted data dir
+### initial start it up
 
 if [ ! -f "$INITIAL_BOOT" ]; then
     # it's our first time ever running, so lets do a cleanse
     chef-server-ctl cleanse
-
     mkdir -p /var/opt/opscode/log
+
+    # runit before reconfigure
+    header "starting runit"
+    /opt/opscode/embedded/bin/runsvdir-start &
+
+    # this is costly to do here (since we have to do it again later)... 
+    # but causes issues to install plugins if server hasn't been reconfigured
+    # yet
+    header "reconfiguring chef server [first boot]"
+    chef-server-ctl reconfigure
+
+    # create our initial boot file so we don't cleanse again
     date > $INITIAL_BOOT
+else
+    # if it's not our first time booting then just start up runit
+    header "starting runit"
+    /opt/opscode/embedded/bin/runsvdir-start &
 fi
 
 
-### start it up
-
-header "starting runit"
-/opt/opscode/embedded/bin/runsvdir-start &
-
-
-rm -f $LOCK
+### reconfigure if this is a new container and/or first boot
 
 if [ ! -f "$CID" ] || [ "$(hostname)" != "$(cat $CID)" ]; then
-    date > $LOCK
-
-    # this is costly to do here (since we have to do it again later)... 
-    # but causes issues to install plugins before server is reconfigured first
-    chef-server-ctl reconfigure
-    
     # install optional plugins first before chef-server-ctl reconfigure
     install_plugins
 
-    header "reconfiguring chef server"
+    header "reconfiguring chef server [new container]"
     chef-server-ctl reconfigure
 
     # reconfigure optional plugins after chef-server-ctl reconfigure
     reconfigure_plugins
-
-    rm -f $LOCK
 fi
 
+
+### wait for the pivotal user to be fully created before resuming
+
+chef-server-wait-pivotal
+
+
+### remove lock and resume
+
+rm -f $LOCK
 hostname > $CID
 
-### handle incoming signals
+
+### handle incoming signals for clean shutdown
 
 trap "{ chef-server-ctl hup; }" SIGHUP
 trap "{ chef-server-ctl stop; exit; }" SIGINT SIGTERM
 
 header "startup complete"
+
 
 # FIX ME: can't seem to figure out how to run `tail` but also catch docker 
 # stop to properly shutdown

@@ -82,9 +82,9 @@ is stored for persistence.
 ## Startup Wait Lock
 
 On startup `reconfigure` is always run, unless the container id hasn't change 
-(determined by `/var/opt/.container_id`).  During reconfiguration, a lock 
-file is created at `/var/opt/opscode/.reconfigure.lock`, and removed once 
-complete.
+(determined by `/var/opt/.container_id`).  During startup, a lock 
+file is created at `/var/opt/opscode/.startup.lock`, and removed once 
+the startup/reconfigure/etc is complete.
 
 For scripting, it is important to ensure that startup and reconfiguration is 
 complete before attempting to access the server.  This can be handled easily 
@@ -93,6 +93,10 @@ with the included wait script:
 ```
 $ docker exec -it [CONTAINER_ID] chef-server-wait-lock
 ```
+
+Note that on the first boot, the startup wait lock also does a second wait to
+ensure that the `pivotal` user has been created properly before resuming.
+
 
 ## Working With Chef Server
 

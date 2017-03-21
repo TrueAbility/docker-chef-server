@@ -1,10 +1,8 @@
 #!/bin/bash
 
-LOCK="/var/opt/opscode/.startup.lock"
-
-echo -n "Waiting for Chef Server Startup Lock"
+echo -n "Waiting for Chef Server Pivotal User"
 while true; do
-    if [ ! -f $LOCK ]; then
+    if [ "$(chef-server-ctl user-list 2>/dev/null| grep pivotal)" ]; then
         echo
         echo "done"
         echo
