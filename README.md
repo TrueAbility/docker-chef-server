@@ -12,7 +12,7 @@ Available tags are:
 
 * `latest`
 * `X.Y.z`
-* `X.Y.z+manage`
+* `X.Y.z-manage`
 * etc.
 
 See [Docker Hub](https://hub.docker.com/r/trueability/chef-server/) for all 
@@ -145,10 +145,28 @@ all configurations that can be made in `chef-server.rb`.
 * Chef Server does not like running on alternative ports, and is difficult
   (or impossible?) to run on anything but `:80` and `:443`.  In environments
   where consuming these ports is a no-go, you may wish to put Nginx on the 
-  frontend to handle proxying to alternative ports (see the
-  `docker-compose.yml` and `nginx/default.conf` for a working example).
-* Cher Server does not like running on an alternative URL path such as 
+  frontend to handle proxying to alternative backend ports.
+
+Example:
+
+```
+server {
+  listen 443 ssl;
+  server_name localhost;
+  ssl_certificate /etc/nginx/ssl/localhost.crt;
+  ssl_certificate_key /etc/nginx/ssl/localhost.key;
+  client_max_body_size 4G;
+  location / {
+      proxy_pass http://chef-server/;
+      proxy_set_header Host $host;
+      proxy_set_header X-Forwarded-Proto https;
+  }
+}
+```
+
+* Chef Server does not like running on an alternative URL path such as 
   `/chef`.
+
 
 Any suggestions on how to better handle this in `chef-server.rb`, please help.
 
