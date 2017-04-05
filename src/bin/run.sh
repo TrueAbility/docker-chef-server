@@ -19,29 +19,41 @@ function header {
     echo $HEADER_STR
 }
 
-function install_plugins {
-    if [ "$ENABLE_CHEF_MANAGE" == "1" ]; then
-        header "installing chef manage"
-        chef-server-ctl install chef-manage
+# function setup_plugins {
+#     if [ "$ENABLE_CHEF_MANAGE" == "1" ]; then
+#         header " chef manage"
+#         chef-server-ctl install chef-manage
+
+#         # fixes `chef-manage-ctl reconfigure`
+#         rm -rf /opt/chef-manage/service
+#         ln -sfv /opt/opscode/service /opt/chef-manage/service
+#     fi
+# }
+
+function reconfigure_plugins {
+    res=$(dpkg -l chef-manage 2>/dev/null)
+    if [ "$res" != "" ]; then
+        header "reconfiguring chef manage"
 
         # fixes `chef-manage-ctl reconfigure`
         rm -rf /opt/chef-manage/service
         ln -sfv /opt/opscode/service /opt/chef-manage/service
-    fi
-}
 
-function reconfigure_plugins {
-    if [ "$ENABLE_CHEF_MANAGE" == "1" ]; then
-        header "reconfiguring chef manage"
         chef-manage-ctl reconfigure --accept-license
     fi
 }
+
+### preliminary tweaks
+
+header "setting preliminary tweaks"
+sysctl net.ipv6.conf.lo.disable_ipv6=0
 
 
 ### initial start it up
 
 if [ ! -f "$INITIAL_BOOT" ]; then
     mkdir -p /var/opt/opscode/{etc,log}
+    touch /var/opt/opscode/etc/chef-server-local.rb
 
     # runit before reconfigure
     header "starting runit"
@@ -68,13 +80,6 @@ fi
 ### reconfigure if this is a new container and/or first boot
 
 if [ ! -f "$CID" ] || [ "$(hostname)" != "$(cat $CID)" ]; then
-    # copy our settings into place
-    mv /src/chef-server.rb /etc/opscode/chef-server.rb
-    mv /src/knife.rb /etc/chef/knife.rb
-
-    # install optional plugins first before chef-server-ctl reconfigure
-    install_plugins
-
     header "reconfiguring chef server [new container]"
     chef-server-ctl reconfigure
 

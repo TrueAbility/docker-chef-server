@@ -8,10 +8,16 @@ Docker image, and is accessible via
 $ docker pull trueability/chef-server
 ```
 
-Available tags are `latest` and every version of Chef Server that has been 
-built for.  I.e. `12.13.0`, etc.  See 
-[Docker Hub](https://hub.docker.com/r/trueability/chef-server/) for all 
+Available tags are:
+
+* `latest`
+* `X.Y.z`
+* `X.Y.z+manage`
+* etc.
+
+See [Docker Hub](https://hub.docker.com/r/trueability/chef-server/) for all 
 current tags.
+
 
 ## Disclaimer
 
@@ -51,8 +57,7 @@ $ docker run -it \
     -p 0.0.0.0:80:80 \
     -p 0.0.0.0:443:443 \
     --privileged \
-    -e PUBLIC_URL="https://mydomain.example.com" \
-    -e ENABLE_CHEF_MANAGE=1 \
+    -e EXTERNAL_URL="https://mydomain.example.com" \
     trueability/chef-server
 
 $ docker exec -it chef-server chef-server-ctl ...
@@ -82,14 +87,8 @@ is stored for persistence.
 
 ### Environment Variables
 
- * `PUBLIC_URL` *(url)*: Tells Chef Server what the publicly accessible 
- URL is.  Default: `https://127.0.0.1/`.
- 
- * `ENABLE_CHEF_MANAGE` *(boolean: 1/0)*: Whether or not to include the Chef 
- Management Interface.  If enable, the Chef Manage plugin will be installed 
- on startup everytime a new container is created.  The reason this is not 
- baked into the image is because it adds an additional `1.1G` to the image 
- size.  Default: `0` (not enabled).
+ * `EXTERNAL_URL` *(hostname)*: Tells Chef Server what the publicly accessible
+ URL is.  Default: `https://localhost`.
 
 
 ## Startup Wait Lock
@@ -130,14 +129,38 @@ $ docker exec -it [CONTAINER_ID] /bin/bash
 XXXXXXXX $ chef-server-ctl ...
 ```
 
+
 ## Chef Server Customizations
 
-A sane default `chef-server.rb` is setup in the image under 
+A sane default `chef-server.rb` is setup read/only in the image under 
 `/etc/opscode/chef-server.rb`, but local customizations can be made in the 
 file `[DATA]/opscode/etc/chef-server-local.rb`.
 
 See the [Chef Documentation](https://docs.chef.io/config_rb_server.html) for
 all configurations that can be made in `chef-server.rb`.
+
+
+## Caveats
+
+* Chef Server does not like running on alternative ports, and is difficult
+  (or impossible?) to run on anything but `:80` and `:443`.  In environments
+  where consuming these ports is a no-go, you may wish to put Nginx on the 
+  frontend to handle proxying to alternative ports (see the
+  `docker-compose.yml` and `nginx/default.conf` for a working example).
+* Cher Server does not like running on an alternative URL path such as 
+  `/chef`.
+
+Any suggestions on how to better handle this in `chef-server.rb`, please help.
+
+
+## Alternative Builds
+
+Separate builds can be performed using Docker Builds Args to enable additional
+functionality (like `chef-manage`, etc):
+
+```
+$ docker build --build-args WITH_MANAGE=1 ...
+```
 
 
 ## Acknowledgements

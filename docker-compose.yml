@@ -1,13 +1,21 @@
-version: "2"
+version: "3"
 services:
     chef-server:
-        build: .
-        ports:
-            - "80:80"
-            - "443:443"
+        build:
+            context: .
+            args:
+                WITH_MANAGE: 1
+        image: trueability/chef-server:dev
         environment:
-            PUBLIC_URL: "https://localhost"
-            ENABLE_CHEF_MANAGE: "1"
+            EXTERNAL_URL: "https://localhost"
         volumes:
             - "./tmp/data:/var/opt"
         privileged: true
+    nginx:
+        image: nginx
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - "./nginx/default.conf:/etc/nginx/conf.d/default.conf"
+            - "./tmp/data/opscode/nginx/ca/:/etc/nginx/ssl"
