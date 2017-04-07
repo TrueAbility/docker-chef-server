@@ -3,8 +3,8 @@
 LOCK="/var/opt/.run/startup.lock"
 
 echo -n "Waiting for Chef Server Startup Lock..."
-while true; do
-    if [ -f $LOCK ]; then
+while /bin/true; do
+    if [ ! -f $LOCK ]; then
         echo
         echo "done"
         echo
