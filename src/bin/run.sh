@@ -19,17 +19,6 @@ function header {
     echo $HEADER_STR
 }
 
-# function setup_plugins {
-#     if [ "$ENABLE_CHEF_MANAGE" == "1" ]; then
-#         header " chef manage"
-#         chef-server-ctl install chef-manage
-
-#         # fixes `chef-manage-ctl reconfigure`
-#         rm -rf /opt/chef-manage/service
-#         ln -sfv /opt/opscode/service /opt/chef-manage/service
-#     fi
-# }
-
 function reconfigure_plugins {
     res=$(dpkg -l chef-manage 2>/dev/null)
     if [ "$res" != "" ]; then
@@ -43,6 +32,20 @@ function reconfigure_plugins {
     fi
 }
 
+function symlink_etc_opscode {
+    ### need to keep /etc/opscode persistent or end up with errors
+    ### see: https://github.com/TrueAbility/docker-chef-server/issues/2
+    
+    # we want chef-server.rb to be consistent with
+    # the docker configuration, but allow overrides in chef-server-local.rb
+    cp -a /etc/opscode/chef-server.rb \
+        /var/opt/opscode/etc/opscode/chef-server.rb
+
+    rm -rf /etc/opscode
+    ln -sfv /var/opt/opscode/etc/opscode /etc/opscode
+}
+
+
 ### preliminary tweaks
 
 header "setting preliminary tweaks"
@@ -53,7 +56,9 @@ sysctl net.ipv6.conf.lo.disable_ipv6=0
 
 if [ ! -f "$INITIAL_BOOT" ]; then
     mkdir -p /var/opt/opscode/{etc,log}
-    touch /var/opt/opscode/etc/chef-server-local.rb
+    mkdir -p /var/opt/opscode/etc/opscode
+    touch /var/opt/opscode/etc/opscode/chef-server-local.rb
+    symlink_etc_opscode
 
     # runit before reconfigure
     header "starting runit"
@@ -81,6 +86,8 @@ fi
 
 if [ ! -f "$CID" ] || [ "$(hostname)" != "$(cat $CID)" ]; then
     header "reconfiguring chef server [new container]"
+    symlink_etc_opscode
+
     chef-server-ctl reconfigure
 
     # reconfigure optional plugins after chef-server-ctl reconfigure
