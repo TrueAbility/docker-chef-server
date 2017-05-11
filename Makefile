@@ -9,6 +9,6 @@ docker:
 		-t trueability/chef-server:latest-manage .
 
 deploy:
-	docker push -t trueability/chef-server:latest
-	docker push -t trueability/chef-server:latest-manage
+	docker push trueability/chef-server:latest
+	docker push trueability/chef-server:latest-manage
 
