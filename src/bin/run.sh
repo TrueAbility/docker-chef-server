@@ -38,6 +38,7 @@ function symlink_etc_opscode {
     
     # we want chef-server.rb to be consistent with
     # the docker configuration, but allow overrides in chef-server-local.rb
+    mkdir -p /var/opt/opscode/etc/opscode/
     cp -a /etc/opscode/chef-server.rb \
         /var/opt/opscode/etc/opscode/chef-server.rb
 
