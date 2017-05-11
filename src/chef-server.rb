@@ -2,7 +2,7 @@
 #
 # persistent customizations should be made in the local override file:
 #
-#   /var/opt/opscode/etc/opscode/chef-server-local.rb
+#   /var/opt/opscode/etc/chef-server-local.rb
 #
 
 require 'uri'
@@ -21,7 +21,7 @@ nginx['url'] = _uri.to_s
 nginx['x_forwarded_proto'] = _uri.scheme
 opscode_erchef['base_resource_url'] = _uri.to_s
 
-_local = '/var/opt/opscode/etc/opscode/chef-server-local.rb'
+_local = '/var/opt/opscode/etc/chef-server-local.rb'
 if File.exists?(_local)
   instance_eval(File.read(_local), _local)
 end

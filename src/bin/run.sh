@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-export NO_SSL='1' # tells chef-manage ui to not force ssl redirect
 CID="/var/opt/.run/container_id"
 LOCK="/var/opt/.run/startup.lock"
 INITIAL_BOOT="/var/opt/.run/initial_boot"
@@ -38,12 +37,11 @@ function symlink_etc_opscode {
     
     # we want chef-server.rb to be consistent with
     # the docker configuration, but allow overrides in chef-server-local.rb
-    mkdir -p /var/opt/opscode/etc/opscode/
-    cp -a /etc/opscode/chef-server.rb \
-        /var/opt/opscode/etc/opscode/chef-server.rb
+    mkdir -p /var/opt/opscode/etc/
+    cp -a /etc/chef-server.rb /var/opt/opscode/etc/chef-server.rb
 
     rm -rf /etc/opscode
-    ln -sfv /var/opt/opscode/etc/opscode /etc/opscode
+    ln -sfv /var/opt/opscode/etc /etc/opscode
 }
 
 
@@ -57,8 +55,7 @@ sysctl net.ipv6.conf.lo.disable_ipv6=0
 
 if [ ! -f "$INITIAL_BOOT" ]; then
     mkdir -p /var/opt/opscode/{etc,log}
-    mkdir -p /var/opt/opscode/etc/opscode
-    touch /var/opt/opscode/etc/opscode/chef-server-local.rb
+    touch /var/opt/opscode/etc/chef-server-local.rb
     symlink_etc_opscode
 
     # runit before reconfigure
@@ -80,6 +77,7 @@ else
     # if it's not our first time booting then just start up runit
     header "starting runit"
     /opt/opscode/embedded/bin/runsvdir-start &
+    symlink_etc_opscode
 fi
 
 
@@ -87,7 +85,6 @@ fi
 
 if [ ! -f "$CID" ] || [ "$(hostname)" != "$(cat $CID)" ]; then
     header "reconfiguring chef server [new container]"
-    symlink_etc_opscode
 
     chef-server-ctl reconfigure
 

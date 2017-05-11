@@ -34,7 +34,7 @@ RUN mkdir -p /opt/opscode/sv /etc/opscode /etc/chef \
     &&  mv /src/knife.rb /etc/chef/knife.rb \
     &&  mv /src/bin/wait-lock.sh /usr/bin/chef-server-wait-lock \
     &&  mv /src/bin/wait-pivotal.sh /usr/bin/chef-server-wait-pivotal \
-    &&  mv /src/chef-server.rb /etc/opscode/chef-server.rb \
+    &&  mv /src/chef-server.rb /etc/chef-server.rb \
     &&  mv /src/bin/run.sh /usr/bin/chef-server-docker-run \
     &&  ln -sfv /var/opt/opscode/log /var/log/opscode \
     &&  ln -sfv /opt/opscode/sv/logrotate /opt/opscode/service/logrotate \
