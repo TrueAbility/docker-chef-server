@@ -3,12 +3,12 @@
 all: docker deploy
 
 docker:
-	docker build -t chef-server:latest .
+	docker build -t trueability/chef-server:latest .
 	docker build \
 		--build-arg WITH_MANAGE=1 \
-		-t chef-server-manage:latest .
+		-t trueability/chef-server:latest-manage .
 
 deploy:
-	docker push harbor.wongsrus.net.au/swong/chef-server:latest
-	docker push harbor.wongsrus.net.au/swong/chef-server-manage:latest
+	docker push trueability/chef-server:latest
+	docker push trueability/chef-server:latest-manage
 
