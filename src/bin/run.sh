@@ -66,7 +66,7 @@ if [ ! -f "$INITIAL_BOOT" ]; then
     # but causes issues to install plugins if server hasn't been reconfigured
     # yet
     header "reconfiguring chef server [first boot]"
-    chef-server-ctl reconfigure
+    chef-server-ctl reconfigure --chef-license accept
 
     # wait for the pivotal user to be fully created before resuming
     chef-server-wait-pivotal
@@ -86,7 +86,7 @@ fi
 if [ ! -f "$CID" ] || [ "$(hostname)" != "$(cat $CID)" ]; then
     header "reconfiguring chef server [new container]"
 
-    chef-server-ctl reconfigure
+    chef-server-ctl reconfigure --chef-license accept
 
     # reconfigure optional plugins after chef-server-ctl reconfigure
     reconfigure_plugins
